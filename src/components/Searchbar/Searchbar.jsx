@@ -12,7 +12,7 @@ export const SearchBar = ({ onSubmit }) => {
     <SearchBarHeader>
       <SearchForm onSubmit={onSubmit}>
         <SearchFormButton type="submit">
-          <ImSearch />
+          <ImSearch size={20} />
           <SearchFormButtonLabel>Search</SearchFormButtonLabel>
         </SearchFormButton>
 

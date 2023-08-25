@@ -5,6 +5,8 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { SearchBar } from './Searchbar/Searchbar';
 import { LoadButton } from './Button/LoadButton';
 import { Loader } from './Loader/Loader';
+import { Toaster } from 'react-hot-toast';
+import { success, error, warning } from './Toaster/Toaster';
 
 export class App extends Component {
   state = {
@@ -53,7 +55,9 @@ export class App extends Component {
               : searchedImages,
           isLoading: false,
         }));
+        success();
       } else {
+        error();
         this.setState({ isLoading: false });
       }
     } catch (error) {
@@ -63,6 +67,10 @@ export class App extends Component {
 
   handleSubmit = evt => {
     evt.preventDefault();
+    if (evt.target.elements.query.value.trim() === '') {
+      warning();
+      return;
+    }
     this.changeQuery(evt.target.elements.query.value);
     evt.target.reset();
   };
@@ -82,6 +90,7 @@ export class App extends Component {
         {images.length > 0 && !isLoading && (
           <LoadButton onClick={this.handleLoadMore} />
         )}
+        <Toaster />
       </GalleryWrapper>
     );
   }
