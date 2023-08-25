@@ -1,15 +1,17 @@
 import { Component } from 'react';
+import { GalleryWrapper } from './App.styled';
 import { getSearchImages } from './Api';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { SearchBar } from './Searchbar/Searchbar';
 import { LoadButton } from './Button/LoadButton';
-import { GalleryWrapper } from './App.styled';
+import { Loader } from './Loader/Loader';
 
 export class App extends Component {
   state = {
     query: '',
     images: [],
     page: 1,
+    isLoading: false,
   };
 
   //Метод для здійснення пошукового запиту
@@ -23,7 +25,6 @@ export class App extends Component {
     });
   };
 
-  //Не забываем отрезать req-id/ от query
   componentDidUpdate = async (prevProps, prevState) => {
     //якщо змінився критерій пошуку або номер сторінки, то робимо HTTP-запит
     if (
@@ -36,6 +37,8 @@ export class App extends Component {
   };
   // `HTTP запит  за ${this.state.query} і page=${this.state.page}`
   loadImages = async () => {
+    this.setState({ isLoading: true });
+
     try {
       const searchedImages = await getSearchImages(
         this.state.query,
@@ -48,7 +51,10 @@ export class App extends Component {
             this.state.page > 1
               ? [...prevState.images, ...searchedImages]
               : searchedImages,
+          isLoading: false,
         }));
+      } else {
+        this.setState({ isLoading: false });
       }
     } catch (error) {
       console.log(error);
@@ -67,12 +73,15 @@ export class App extends Component {
   };
 
   render() {
-    const { images } = this.state;
+    const { images, isLoading } = this.state;
     return (
       <GalleryWrapper>
         <SearchBar onSubmit={this.handleSubmit} />
-        <ImageGallery images={images} />
-        <LoadButton onClick={this.handleLoadMore}>Load more</LoadButton>
+        {isLoading && <Loader />}
+        {images.length > 0 && <ImageGallery images={images} />}
+        {images.length > 0 && !isLoading && (
+          <LoadButton onClick={this.handleLoadMore} />
+        )}
       </GalleryWrapper>
     );
   }
