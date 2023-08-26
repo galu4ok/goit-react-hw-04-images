@@ -2,7 +2,7 @@ import { ImageGalleryItemImage } from './ItemGalleryItem.styled';
 import { Component } from 'react';
 import Modal from 'react-modal';
 import { ImCross } from 'react-icons/im';
-import { ModalCloseBtn } from 'components/Modal/Modal.CloseBtn';
+import { ModalCloseBtn } from 'components/Modal/ModalCloseBtn.styled';
 
 const customStyles = {
   content: {
