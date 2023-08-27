@@ -8,11 +8,14 @@ import { Loader } from './Loader/Loader';
 import { Toaster } from 'react-hot-toast';
 import { success, error, warning } from './Toaster/Toaster';
 
+const IMAGES_PER_PAGE = 12;
+
 export const App = () => {
   const [query, setQuery] = useState('');
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasNewImages, setHasNewImages] = useState(false);
 
   const changeQuery = newQuery => {
     //додаємо перед пошуковим запитом унікальний ідентифікатор
@@ -20,6 +23,8 @@ export const App = () => {
     //очищаємо при сабміті форми попередню колекцію зображень та скидаємо номер сторінки до початкової
     setImages([]);
     setPage(1);
+    //вказуємо, що при новому пошуковому запиті є нові зображення для завантаження
+    setHasNewImages(true);
   };
 
   const handleSubmit = evt => {
@@ -35,6 +40,8 @@ export const App = () => {
 
   const handleLoadMore = () => {
     setPage(prevState => prevState + 1);
+    // Після натискання на кнопку LoadMore вважаємо, що нові зображення були переглянуті
+    setHasNewImages(false);
   };
   //Робимо HTTP-запит, якщо змінився критерій пошуку або номер сторінки
   useEffect(() => {
@@ -51,8 +58,10 @@ export const App = () => {
           setImages(prevState =>
             page > 1 ? [...prevState, ...searchedImages] : searchedImages
           );
+          setHasNewImages(searchedImages.length >= IMAGES_PER_PAGE);
           success();
         } else {
+          setHasNewImages(false);
           error();
         }
       } catch (error) {
@@ -69,7 +78,7 @@ export const App = () => {
       <SearchBar onSubmit={handleSubmit} />
       {isLoading && <Loader />}
       {images.length > 0 && <ImageGallery images={images} />}
-      {images.length > 0 && !isLoading && (
+      {images.length > 0 && !isLoading && hasNewImages && (
         <LoadButton onClick={handleLoadMore} />
       )}
       <Toaster />
