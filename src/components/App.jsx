@@ -30,7 +30,7 @@ export const App = () => {
   const handleSubmit = evt => {
     evt.preventDefault();
     const enteredQuery = evt.target.elements.query.value.trim();
-    if (enteredQuery === '') {
+    if (!enteredQuery) {
       warning();
       return;
     }
@@ -45,7 +45,8 @@ export const App = () => {
   };
   //Робимо HTTP-запит, якщо змінився критерій пошуку або номер сторінки
   useEffect(() => {
-    if (query === '') {
+    //при першому рендері (коли query пустий рядок) не робимо запит
+    if (!query) {
       return;
     }
 
